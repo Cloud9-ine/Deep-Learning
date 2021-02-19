@@ -647,14 +647,14 @@ nout = int(np.max(Y)) + 1
 x = [[Value(v) for v in sample] for sample in X]
 y = [int(v) for v in Y]
 
-# # Initialize Linear Model
-# linear_model = LinearLayer(nin, nout)
-#
-# # Train Model
-# train(x, y, linear_model)
-#
-# # Visualize Learned Decision Boundary
-# visualization(X, Y, linear_model)
+# Initialize Linear Model
+linear_model = LinearLayer(nin, nout)
+
+# Train Model
+train(x, y, linear_model)
+
+# Visualize Learned Decision Boundary
+visualization(X, Y, linear_model)
 
 
 class MLP(Module):
@@ -682,17 +682,32 @@ class MLP(Module):
         """
         # TODO Implement this function and return the output of a MLP
 
-        first_out = self.linear_layers[0](x)
-        second_in = []
-        for i in range(len(first_out)):
-            tmp = []
-            for j in range(len(first_out[0])):
-                v = Value(data=0)
-                v = first_out[i][j].relu()
-                tmp.append(v)
-            second_in.append(tmp)
-        xout = self.linear_layers[1](second_in)
-        return xout
+        # first_out = self.linear_layers[0](x)
+        # second_in = []
+        # for i in range(len(first_out)):
+        #     tmp = []
+        #     for j in range(len(first_out[0])):
+        #         v = Value(data=0)
+        #         v = first_out[i][j].relu()
+        #         tmp.append(v)
+        #     second_in.append(tmp)
+        # xout = self.linear_layers[1](second_in)
+        # return xout
+
+        outputs = [x]
+        for L in range(len(self.linear_layers)):
+            prev_out = self.linear_layers[L](outputs[-1])
+            if L == len(self.linear_layers) - 1:
+                return prev_out
+            next_in = []
+            for i in range(len(prev_out)):
+                tmp = []
+                for j in range(len(prev_out[0])):
+                    v = Value(data=0)
+                    v = prev_out[i][j].relu()
+                    tmp.append(v)
+                next_in.append(tmp)
+            outputs.append(next_in)
 
     def parameters(self):
         """
@@ -714,11 +729,11 @@ class MLP(Module):
             p.grad = 0
 
 
-# Initialize MLP with Given Parameters
-mlp_model = MLP([nin, 40, nout])
-
-# Train the MLP
-train(x, y, mlp_model)
-
-# Visualize Decision Boundaries
-visualization(X, Y, mlp_model)
+# # Initialize MLP with Given Parameters
+# mlp_model = MLP([nin, 40, nout])
+#
+# # Train the MLP
+# train(x, y, mlp_model)
+#
+# # Visualize Decision Boundaries
+# visualization(X, Y, mlp_model)
